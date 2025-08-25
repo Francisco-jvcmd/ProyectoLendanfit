@@ -1,0 +1,68 @@
+Objetivo: Crear una aplicación web llamada "Lendanfit" para generar planes de ejercicio y nutrición personalizados sin necesidad de registro de usuario.
+
+Características Generales de la Aplicación
+Nombre de la App: Lendanfit
+
+Tecnologías: Desarrolla la aplicación usando HTML, CSS y JavaScript para crear una experiencia responsive (adaptable a todos los dispositivos, incluyendo móviles y tabletas).
+
+Estilo Visual: La aplicación debe tener una paleta de colores oscuros cuidadosamente seleccionada. El contraste entre el texto y el fondo debe ser óptimo para garantizar que ninguna palabra sea opacada. Elige una paleta profesional y legible.
+
+Logo: Diseña un logo con una pesa o un elemento relacionado con el fitness. El logo debe ser estático en su lugar, con una función de encendido y apagado que lo ilumine o lo atenúe. El nombre "Lendanfit" debe estar al lado del logo.
+
+Sin Inicio de Sesión: La aplicación no debe requerir ningún tipo de registro o inicio de sesión.
+
+Descarga del Plan: Agrega un botón visible en la página del plan para descargar el plan completo de 6 meses en formato PDF.
+
+Estructura y Lógica de las Páginas
+Página de Inicio
+Cuestionario Inicial: Al entrar, el usuario responderá un cuestionario simple que incluye:
+
+Edad: Campo para ingresar la edad.
+
+Nivel de Pasos Diarios: Un campo para que el usuario ingrese la cantidad de pasos, con una descripción clara de los rangos y niveles:
+
+Menos de 4,000 pasos: Nivel Básico
+
+4,000 - 6,000 pasos: Nivel Medio
+
+Más de 6,000 pasos: Nivel Avanzado
+
+Estado de Salud: Una selección con tres posibles niveles (ej. "Excelente", "Promedio", "Necesita Mejoras"), cada uno con una breve descripción.
+
+Objetivo Principal: Una pregunta de opción múltiple con objetivos como: ¿Reducir el estrés?, ¿Ganar masa muscular?, ¿Mejorar la resistencia?, etc.
+
+Visualización Principal: Una vez completado el cuestionario, la página de inicio mostrará un resumen visual que incluye:
+
+El número de pasos ingresado.
+
+El nivel de estado físico (Básico, Medio, Avanzado) asignado.
+
+El nivel de salud seleccionado.
+
+Un calendario que muestre la fecha actual.
+
+Página del Plan (Lógica de Generación)
+Plan de Ejercicios de 6 Meses:
+
+Lógica por Nivel de Pasos:
+
+Nivel Básico (menos de 4,000 pasos): Genera ejercicios simples como estiramientos, caminatas de 10-20 minutos, y ejercicios de respiración.
+
+Nivel Medio (4,000 - 6,000 pasos): Incorpora ejercicios de dificultad media.
+
+Nivel Avanzado (más de 6,000 pasos): Sugiere rutinas más intensas y completas.
+
+Descripción e Ilustración: Cada ejercicio, en cualquier nivel, debe ir acompañado de una descripción detallada sobre cómo realizarlo y una ilustración visual dinámica en formato GIF que lo demuestre de manera clara y concisa.
+
+Progresión Mensual: El plan debe cambiar los ejercicios y rutinas cada mes, durante los 6 meses, para ofrecer variedad y progresión al usuario.
+
+Sección de Nutrición:
+
+Consejos Nutricionales: Esta sección proporcionará recomendaciones alimenticias que también cambiarán mensualmente.
+
+Detalle Interactivo: Al hacer clic en un tipo de alimento (ej. "5 porciones de vegetales"), debe aparecer una descripción con ejemplos de vegetales y sugerencias sobre en qué comidas incluirlos. Esto debe ser replicado para otros grupos alimenticios como proteínas, carbohidratos, etc.
+
+Recomendaciones Adicionales y Estructura de Datos
+Estructura de Datos: Para organizar la información de forma escalable, el plan de ejercicios y la información nutricional de los 6 meses deben estar definidos en una estructura de datos clara, como un archivo JSON. Este archivo debe categorizar los ejercicios y consejos nutricionales por "nivel" y por "mes".
+
+Generación de PDF: El código debe incluir una función o biblioteca para generar y descargar un archivo PDF con todo el contenido del plan de 6 meses, respetando el diseño de la aplicación.
