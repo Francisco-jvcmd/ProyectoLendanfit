@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lendanfit - Planes de Ejercicio y Nutrición Personalizados</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dark-bg': '#1a1a1a',
+                        'dark-card': '#2d2d2d',
+                        'dark-surface': '#3a3a3a',
+                        'accent': '#00d4aa',
+                        'accent-hover': '#00b894',
+                        'secondary': '#ff6b6b',
+                        'muted': '#b0b0b0',
+                        'border': '#4a5568'
+                    },
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        .logo-glow {
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 0 10px #00d4aa);
+        }
+        .logo-dim {
+            transition: all 0.3s ease;
+            filter: brightness(0.3);
+        }
+        .exercise-card:hover {
+            transform: translateY(-2px);
+            transition: transform 0.2s ease;
+        }
+        .nutrition-card {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .nutrition-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 212, 170, 0.15);
+        }
+    </style>
+</head>
+
+<body class="bg-dark-bg font-inter text-white min-h-screen">
+    <!-- Header -->
+    <header class="bg-dark-card border-b border-border">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <!-- Logo con función de encendido/apagado -->
+                    <div class="flex items-center space-x-3">
+                        <button onclick="toggleLogo()" class="focus:outline-none">
+                            <i id="logoIcon" class="fas fa-dumbbell text-3xl text-accent logo-glow"></i>
+                        </button>
+                        <h1 class="text-2xl font-bold text-white">Lendanfit</h1>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <button onclick="showSection('questionnaire')" class="text-muted hover:text-accent transition-colors">Inicio</button>
+                    <button onclick="showSection('dashboard')" class="text-muted hover:text-accent transition-colors">Mi Perfil</button>
+                    <button onclick="showSection('exercise-plan')" class="text-muted hover:text-accent transition-colors">Plan de Ejercicio</button>
+                    <button onclick="showSection('nutrition')" class="text-muted hover:text-accent transition-colors">Nutrición</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Questionnaire Section -->
+    <section id="questionnaire" class="section active">
+        <div class="container mx-auto px-4 py-12">
+            <div class="max-w-2xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold mb-4">Crea Tu Plan Personalizado</h2>
+                    <p class="text-muted text-lg">Responde estas preguntas para generar tu plan de ejercicio y nutrición de 6 meses</p>
+                </div>
+
+                <div class="bg-dark-card rounded-xl p-8 shadow-xl">
+                    <form id="questionnaireForm" class="space-y-8">
+                        <!-- Edad -->
+                        <div>
+                            <label class="block text-lg font-semibold mb-3">¿Cuál es tu edad?</label>
+                            <input type="number" id="age" min="13" max="100" class="w-full bg-dark-surface border border-border rounded-lg px-4 py-3 text-white focus:border-accent focus:outline-none" placeholder="Ej: 25" required>
+                        </div>
+
+                        <!-- Nivel de Pasos Diarios -->
+                        <div>
+                            <label class="block text-lg font-semibold mb-3">¿Cuántos pasos das diariamente?</label>
+                            <div class="space-y-3">
+                                <label class="flex items-center space-x-3 bg-dark-surface p-4 rounded-lg cursor-pointer hover:bg-opacity-80">
+                                    <input type="radio" name="stepsLevel" value="basic" class="text-accent focus:ring-accent">
+                                    <div>
+                                        <div class="font-medium">Menos de 4,000 pasos - Nivel Básico</div>
+                                        <div class="text-sm text-muted">Estilo de vida sedentario, poco movimiento diario</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-center space-x-3 bg-dark-surface p-4 rounded-lg cursor-pointer hover:bg-opacity-80">
+                                    <input type="radio" name="stepsLevel" value="medium" class="text-accent focus:ring-accent">
+                                    <div>
+                                        <div class="font-medium">4,000 - 6,000 pasos - Nivel Medio</div>
+                                        <div class="text-sm text-muted">Actividad moderada, algunas caminatas</div>
+                                    </div>
+                                </label>
+                                <label class="flex items-center space-x-3 bg-dark-surface p-4 rounded-lg cursor-pointer hover:bg-opacity-80">
+                                    <input type="radio" name="stepsLevel" value="advanced" class="text-accent focus:ring-accent">
+                                    <div>
+                                        <div class="font-medium">Más de 6,000 pasos - Nivel Avanzado</div>
+                                        <div class="text-sm text-muted">Persona activa, ejercicio regular</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Estado de Salud -->
+                        <div>
+                            <label class="block text-lg font-semibold mb-3">¿Cómo describes tu estado de salud?</label>
+                            <select id="healthStatus" class="w-full bg-dark-surface border border-border rounded-lg px-4 py-3 text-white focus:border-accent focus:outline-none" required>
+                                <option value="">Selecciona una opción</option>
+                                <option value="excellent">Excelente - Sin limitaciones de salud</option>
+                                <option value="average">Promedio - Algunas molestias menores</option>
+                                <option value="needs-improvement">Necesita Mejoras - Problemas de salud a considerar</option>
+                            </select>
+                        </div>
+
+                        <!-- Objetivo Principal -->
+                        <div>
+                            <label class="block text-lg font-semibold mb-3">¿Cuál es tu objetivo principal?</label>
+                            <select id="mainObjective" class="w-full bg-dark-surface border border-border rounded-lg px-4 py-3 text-white focus:border-accent focus:outline-none" required>
+                                <option value="">Selecciona tu objetivo</option>
+                                <option value="reduce-stress">Reducir el estrés</option>
+                                <option value="gain-muscle">Ganar masa muscular</option>
+                                <option value="improve-resistance">Mejorar la resistencia</option>
+                                <option value="lose-weight">Perder peso</option>
+                                <option value="improve-flexibility">Mejorar flexibilidad</option>
+                                <option value="general-health">Mejorar salud general</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="w-full bg-accent hover:bg-accent-hover text-dark-bg font-bold py-4 px-6 rounded-lg transition-colors text-lg">
+                            Generar Mi Plan Personalizado
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="section">
+        <div class="container mx-auto px-4 py-12">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold mb-4">Mi Perfil de Entrenamiento</h2>
+                    <p class="text-muted text-lg">Resumen de tu información y progreso</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <!-- Edad Card -->
+                    <div class="bg-dark-card rounded-xl p-6 text-center">
+                        <div class="text-accent text-3xl mb-2">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="text-2xl font-bold mb-1" id="displayAge">25</div>
+                        <div class="text-muted">Años</div>
+                    </div>
+
+                    <!-- Nivel Card -->
+                    <div class="bg-dark-card rounded-xl p-6 text-center">
+                        <div class="text-accent text-3xl mb-2">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="text-xl font-bold mb-1" id="displayLevel">Medio</div>
+                        <div class="text-muted">Nivel de Actividad</div>
+                    </div>
+
+                    <!-- Salud Card -->
+                    <div class="bg-dark-card rounded-xl p-6 text-center">
+                        <div class="text-accent text-3xl mb-2">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="text-xl font-bold mb-1" id="displayHealth">Promedio</div>
+                        <div class="text-muted">Estado de Salud</div>
+                    </div>
+
+                    <!-- Fecha Card -->
+                    <div class="bg-dark-card rounded-xl p-6 text-center">
+                        <div class="text-accent text-3xl mb-2">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="text-lg font-bold mb-1" id="currentDate">Hoy</div>
+                        <div class="text-muted">Fecha Actual</div>
+                    </div>
+                </div>
+
+                <!-- Objetivo y Pasos -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-dark-card rounded-xl p-8">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-bullseye text-accent text-2xl mr-3"></i>
+                            <h3 class="text-xl font-bold">Objetivo Principal</h3>
+                        </div>
+                        <p class="text-muted text-lg" id="displayObjective">Mejorar la resistencia</p>
+                    </div>
+
+                    <div class="bg-dark-card rounded-xl p-8">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-walking text-accent text-2xl mr-3"></i>
+                            <h3 class="text-xl font-bold">Pasos Diarios</h3>
+                        </div>
+                        <p class="text-muted text-lg" id="displaySteps">4,000 - 6,000 pasos</p>
+                    </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="text-center mt-12">
+                    <div class="space-x-4">
+                        <button onclick="showSection('exercise-plan')" class="bg-accent hover:bg-accent-hover text-dark-bg font-bold py-3 px-8 rounded-lg transition-colors">
+                            Ver Plan de Ejercicio
+                        </button>
+                        <button onclick="showSection('nutrition')" class="bg-secondary hover:bg-red-500 text-white font-bold py-3 px-8 rounded-lg transition-colors">
+                            Ver Plan Nutricional
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Exercise Plan Section -->
+    <section id="exercise-plan" class="section">
+        <div class="container mx-auto px-4 py-12">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-center mb-12">
+                    <div>
+                        <h2 class="text-4xl font-bold mb-4">Plan de Ejercicio - 6 Meses</h2>
+                        <p class="text-muted text-lg">Progresión mensual adaptada a tu nivel</p>
+                    </div>
+                    <button onclick="downloadPDF()" class="bg-accent hover:bg-accent-hover text-dark-bg font-bold py-3 px-6 rounded-lg transition-colors">
+                        <i class="fas fa-download mr-2"></i>
+                        Descargar PDF
+                    </button>
+                </div>
+
+                <!-- Tabs de Meses -->
+                <div class="flex flex-wrap gap-2 mb-8 overflow-x-auto">
+                    <button onclick="showMonth(1)" class="month-tab active bg-accent text-dark-bg font-bold py-2 px-4 rounded-lg transition-colors">Mes 1</button>
+                    <button onclick="showMonth(2)" class="month-tab bg-dark-surface text-white font-bold py-2 px-4 rounded-lg transition-colors hover:bg-border">Mes 2</button>
+                    <button onclick="showMonth(3)" class="month-tab bg-dark-surface text-white font-bold py-2 px-4 rounded-lg transition-colors hover:bg-border">Mes 3</button>
+                    <button onclick="showMonth(4)" class="month-tab bg-dark-surface text-white font-bold py-2 px-4 rounded-lg transition-colors hover:bg-border">Mes 4</button>
+                    <button onclick="showMonth(5)" class="month-tab bg-dark-surface text-white font-bold py-2 px-4 rounded-lg transition-colors hover:bg-border">Mes 5</button>
+                    <button onclick="showMonth(6)" class="month-tab bg-dark-surface text-white font-bold py-2 px-4 rounded-lg transition-colors hover:bg-border">Mes 6</button>
+                </div>
+
+                <!-- Contenido del Mes -->
+                <div id="monthContent">
+                    <!-- El contenido se genera dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Nutrition Section -->
+    <section id="nutrition" class="section">
+        <div class="container mx-auto px-4 py-12">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold mb-4">Plan Nutricional</h2>
+                    <p class="text-muted text-lg">Recomendaciones alimentarias personalizadas</p>
+                </div>
+
+                <!-- Tabs de Meses Nutrición -->
+                <div class="flex flex-wrap gap-2 mb-8 overflow-x-auto">
+                    <button onclick="showNutritionMonth(1)" class="nutrition-tab active bg-secondary text-white font-bold py-2 px-4 rounded-lg transition-colors">Mes 1</button>
+                    <button onclick="showNutritionMonth(2)" class="nutrition-tab bg-dark-surface text-white font-bold py-2 px-4 rounded-lg transition-colors hover:bg-border">Mes 2</button>
+                    <button onclick="showNutritionMonth(3)" class="nutrition-tab bg-dark-surface text-white font-bold py-2 px-4 rounded-lg transition-colors hover:bg-border">Mes 3</button>
+                    <button onclick="showNutritionMonth(4)" class="nutrition-tab bg-dark-surface text-white font-bold py-2 px-4 rounded-lg transition-colors hover:bg-border">Mes 4</button>
+                    <button onclick="showNutritionMonth(5)" class="nutrition-tab bg-dark-surface text-white font-bold py-2 px-4 rounded-lg transition-colors hover:bg-border">Mes 5</button>
+                    <button onclick="showNutritionMonth(6)" class="nutrition-tab bg-dark-surface text-white font-bold py-2 px-4 rounded-lg transition-colors hover:bg-border">Mes 6</button>
+                </div>
+
+                <!-- Contenido Nutricional -->
+                <div id="nutritionContent">
+                    <!-- El contenido se genera dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal para detalles nutricionales -->
+    <div id="nutritionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-dark-card rounded-xl p-8 max-w-2xl w-full max-h-96 overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="modalTitle" class="text-2xl font-bold"></h3>
+                <button onclick="closeModal()" class="text-muted hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="modalContent" class="text-muted"></div>
+        </div>
+    </div>
+
+    <script>
+        // TODO: Implement business logic, API calls, or state management
+        
+        // Función para alternar el logo
+        let logoGlowing = true;
+        function toggleLogo() {
+            const logoIcon = document.getElementById('logoIcon');
+            if (logoGlowing) {
+                logoIcon.className = 'fas fa-dumbbell text-3xl text-accent logo-dim';
+            } else {
+                logoIcon.className = 'fas fa-dumbbell text-3xl text-accent logo-glow';
+            }
+            logoGlowing = !logoGlowing;
+        }
+
+        // Variables globales para almacenar datos del usuario
+        let userData = {
+            age: 25,
+            stepsLevel: 'medium',
+            healthStatus: 'average',
+            mainObjective: 'improve-resistance'
+        };
+
+        // Datos estructurados del plan (JSON)
+        const exerciseData = {
+            basic: {
+                1: [
+                    {
+                        name: "Caminata Matutina",
+                        description: "Camina durante 15-20 minutos a ritmo cómodo. Mantén la espalda recta y respira profundamente.",
+                        duration: "15-20 min",
+                        frequency: "Diario"
+                    },
+                    {
+                        name: "Estiramientos Básicos",
+                        description: "Realiza estiramientos suaves para brazos, piernas y cuello. Mantén cada posición 15-30 segundos.",
+                        duration: "10 min",
+                        frequency: "2 veces al día"
+                    },
+                    {
+                        name: "Respiración Profunda",
+                        description: "Siéntate cómodamente, inhala por 4 segundos, mantén por 4, exhala por 6. Repite 10 veces.",
+                        duration: "5 min",
+                        frequency: "3 veces al día"
+                    }
+                ],
+                2: [
+                    {
+                        name: "Caminata Extendida",
+                        description: "Aumenta la caminata a 25-30 minutos. Incluye pequeñas pendientes si es posible.",
+                        duration: "25-30 min",
+                        frequency: "Diario"
+                    },
+                    {
+                        name: "Ejercicios de Movilidad",
+                        description: "Movimientos circulares de articulaciones: hombros, caderas, tobillos. 10 repeticiones cada uno.",
+                        duration: "15 min",
+                        frequency: "Diario"
+                    }
+                ]
+            },
+            medium: {
+                1: [
+                    {
+                        name: "Caminata Enérgica",
+                        description: "Camina a ritmo moderado-rápido durante 30 minutos. Incluye intervalos de 2 minutos más rápidos cada 10 minutos.",
+                        duration: "30 min",
+                        frequency: "5 veces por semana"
+                    },
+                    {
+                        name: "Sentadillas Básicas",
+                        description: "De pie, pies separados al ancho de hombros. Baja como si te sentaras en una silla, regresa arriba. 3 series de 12 repeticiones.",
+                        duration: "10 min",
+                        frequency: "3 veces por semana"
+                    },
+                    {
+                        name: "Flexiones de Rodillas",
+                        description: "En posición de plancha pero apoyando las rodillas. Baja el pecho al suelo y sube. 3 series de 8-10 repeticiones.",
+                        duration: "8 min",
+                        frequency: "3 veces por semana"
+                    }
+                ],
+                2: [
+                    {
+                        name: "Caminata con Intervalos",
+                        description: "35 minutos alternando 3 min caminata normal, 2 min caminata rápida. Termina con 5 min de enfriamiento.",
+                        duration: "35 min",
+                        frequency: "5 veces por semana"
+                    },
+                    {
+                        name: "Sentadillas con Salto",
+                        description: "Realiza una sentadilla normal, al subir da un pequeño salto. Aterriza suavemente. 3 series de 10 repeticiones.",
+                        duration: "12 min",
+                        frequency: "3 veces por semana"
+                    }
+                ]
+            },
+            advanced: {
+                1: [
+                    {
+                        name: "Carrera de Intervalos",
+                        description: "Corre 5 min de calentamiento, luego 8 intervalos de 1 min rápido/1 min lento, 5 min enfriamiento.",
+                        duration: "40 min",
+                        frequency: "4 veces por semana"
+                    },
+                    {
+                        name: "Flexiones Completas",
+                        description: "Flexiones tradicionales manteniendo el cuerpo recto. Si es muy fácil, eleva los pies. 4 series de 12-15 repeticiones.",
+                        duration: "15 min",
+                        frequency: "3 veces por semana"
+                    },
+                    {
+                        name: "Plancha Completa",
+                        description: "Mantén la posición de plancha con antebrazos en el suelo. Cuerpo recto de cabeza a talones. Mantén 30-60 segundos, 4 series.",
+                        duration: "12 min",
+                        frequency: "4 veces por semana"
+                    },
+                    {
+                        name: "Sentadillas con Peso",
+                        description: "Sentadillas tradicionales sosteniendo una botella de agua o mancuernas. Movimiento controlado. 4 series de 15 repeticiones.",
+                        duration: "15 min",
+                        frequency: "3 veces por semana"
+                    }
+                ],
+                2: [
+                    {
+                        name: "Carrera de Resistencia",
+                        description: "45 minutos de carrera a ritmo constante moderado. Mantén conversación ligera durante el ejercicio.",
+                        duration: "45 min",
+                        frequency: "3 veces por semana"
+                    },
+                    {
+                        name: "Burpees Modificados",
+                        description: "Desde de pie, baja a cuclillas, extiende piernas atrás, regresa y salta arriba. 4 series de 8-10 repeticiones.",
+                        duration: "16 min",
+                        frequency: "3 veces por semana"
+                    }
+                ]
+            }
+        };
+
+        const nutritionData = {
+            1: {
+                title: "Fundamentos Nutricionales",
+                recommendations: [
+                    {
+                        type: "Vegetales",
+                        amount: "5 porciones diarias",
+                        details: "Incluye espinacas, brócoli, zanahorias, pimientos, tomates. Distribuye en almuerzo y cena, añade en ensaladas y como snacks."
+                    },
+                    {
+                        type: "Proteínas",
+                        amount: "2-3 porciones diarias",
+                        details: "Pollo, pescado, huevos, legumbres, tofu. Una porción en cada comida principal, del tamaño de tu palma."
+                    },
+                    {
+                        type: "Carbohidratos Complejos",
+                        amount: "3-4 porciones diarias",
+                        details: "Avena, arroz integral, quinoa, pan integral. Concentra el consumo en desayuno y almuerzo para mayor energía."
+                    },
+                    {
+                        type: "Grasas Saludables",
+                        amount: "2-3 porciones diarias",
+                        details: "Aguacate, nueces, aceite de oliva, semillas. Una cucharada de aceite por comida, un puñado de frutos secos como snack."
+                    }
+                ]
+            },
+            2: {
+                title: "Hidratación y Timing",
+                recommendations: [
+                    {
+                        type: "Agua",
+                        amount: "8-10 vasos diarios",
+                        details: "Bebe un vaso al despertar, antes de cada comida, y durante el ejercicio. Añade limón o pepino para variedad."
+                    },
+                    {
+                        type: "Pre-Ejercicio",
+                        amount: "1-2 horas antes",
+                        details: "Banana con mantequilla de maní, avena con frutas, o tostada integral. Evita comidas pesadas."
+                    },
+                    {
+                        type: "Post-Ejercicio",
+                        amount: "30 minutos después",
+                        details: "Combina proteína y carbohidratos: batido con proteína y fruta, yogur con granola, huevos con tostada."
+                    }
+                ]
+            }
+        };
+
+        // Funciones de navegación
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mostrar fecha actual
+            const today = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = today.toLocaleDateString('es-ES', options);
+
+            // Mostrar solo la primera sección
+            showSection('questionnaire');
+            
+            // Mostrar contenido inicial
+            showMonth(1);
+            showNutritionMonth(1);
+        });
+
+        // Manejar envío del formulario
+        document.getElementById('questionnaireForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Recopilar datos del formulario
+            userData.age = document.getElementById('age').value;
+            userData.stepsLevel = document.querySelector('input[name="stepsLevel"]:checked')?.value;
+            userData.healthStatus = document.getElementById('healthStatus').value;
+            userData.mainObjective = document.getElementById('mainObjective').value;
+
+            // Actualizar dashboard
+            updateDashboard();
+            
+            // Mostrar dashboard
+            showSection('dashboard');
+        });
+
+        function updateDashboard() {
+            document.getElementById('displayAge').textContent = userData.age;
+            
+            const levels = {
+                'basic': 'Básico',
+                'medium': 'Medio', 
+                'advanced': 'Avanzado'
+            };
+            document.getElementById('displayLevel').textContent = levels[userData.stepsLevel];
+
+            const health = {
+                'excellent': 'Excelente',
+                'average': 'Promedio',
+                'needs-improvement': 'Necesita Mejoras'
+            };
+            document.getElementById('displayHealth').textContent = health[userData.healthStatus];
+
+            const objectives = {
+                'reduce-stress': 'Reducir el estrés',
+                'gain-muscle': 'Ganar masa muscular',
+                'improve-resistance': 'Mejorar la resistencia',
+                'lose-weight': 'Perder peso',
+                'improve-flexibility': 'Mejorar flexibilidad',
+                'general-health': 'Mejorar salud general'
+            };
+            document.getElementById('displayObjective').textContent = objectives[userData.mainObjective];
+
+            const steps = {
+                'basic': 'Menos de 4,000 pasos',
+                'medium': '4,000 - 6,000 pasos',
+                'advanced': 'Más de 6,000 pasos'
+            };
+            document.getElementById('displaySteps').textContent = steps[userData.stepsLevel];
+        }
+
+        // Funciones para mostrar meses del plan de ejercicio
+        function showMonth(month) {
+            // Actualizar tabs activos
+            document.querySelectorAll('.month-tab').forEach(tab => {
+                tab.classList.remove('active', 'bg-accent', 'text-dark-bg');
+                tab.classList.add('bg-dark-surface', 'text-white');
+            });
+            event.target.classList.add('active', 'bg-accent', 'text-dark-bg');
+            event.target.classList.remove('bg-dark-surface', 'text-white');
+
+            // Generar contenido del mes
+            const level = userData.stepsLevel || 'medium';
+            const exercises = exerciseData[level][month] || exerciseData[level][1];
+            
+            let content = `
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold mb-4">Mes ${month} - Nivel ${levels[level]}</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            `;
+
+            exercises.forEach((exercise, index) => {
+                content += `
+                    <div class="exercise-card bg-dark-card rounded-xl p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-accent text-dark-bg rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3">
+                                ${index + 1}
+                            </div>
+                            <h4 class="text-lg font-bold">${exercise.name}</h4>
+                        </div>
+                        <p class="text-muted mb-4">${exercise.description}</p>
+                        <div class="flex justify-between text-sm">
+                            <span class="bg-dark-surface px-2 py-1 rounded">${exercise.duration}</span>
+                            <span class="bg-accent bg-opacity-20 text-accent px-2 py-1 rounded">${exercise.frequency}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            content += '</div></div>';
+            document.getElementById('monthContent').innerHTML = content;
+        }
+
+        const levels = {
+            'basic': 'Básico',
+            'medium': 'Medio',
+            'advanced': 'Avanzado'
+        };
+
+        // Funciones para mostrar meses del plan nutricional
+        function showNutritionMonth(month) {
+            // Actualizar tabs activos
+            document.querySelectorAll('.nutrition-tab').forEach(tab => {
+                tab.classList.remove('active', 'bg-secondary');
+                tab.classList.add('bg-dark-surface');
+            });
+            event.target.classList.add('active', 'bg-secondary');
+            event.target.classList.remove('bg-dark-surface');
+
+            // Generar contenido nutricional
+            const nutrition = nutritionData[month] || nutritionData[1];
+            
+            let content = `
+                <div class="mb-8">
+                    <h3 class="text-2xl font-bold mb-6">${nutrition.title}</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            `;
+
+            nutrition.recommendations.forEach((item, index) => {
+                content += `
+                    <div class="nutrition-card bg-dark-card rounded-xl p-6" onclick="showNutritionDetails('${item.type}', '${item.amount}', '${item.details}')">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-secondary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3">
+                                <i class="fas fa-utensils text-sm"></i>
+                            </div>
+                            <h4 class="text-lg font-bold">${item.type}</h4>
+                        </div>
+                        <p class="text-accent font-semibold mb-2">${item.amount}</p>
+                        <p class="text-muted text-sm">Haz clic para ver detalles y sugerencias</p>
+                    </div>
+                `;
+            });
+
+            content += '</div></div>';
+            document.getElementById('nutritionContent').innerHTML = content;
+        }
+
+        // Funciones para el modal de nutrición
+        function showNutritionDetails(type, amount, details) {
+            document.getElementById('modalTitle').textContent = `${type} - ${amount}`;
+            document.getElementById('modalContent').innerHTML = `<p class="leading-relaxed">${details}</p>`;
+            document.getElementById('nutritionModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('nutritionModal').classList.add('hidden');
+        }
+
+        // Función para generar y descargar PDF
+        function downloadPDF() {
+            // Simular generación de PDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // TODO: Implement full PDF generation with proper formatting
+            doc.setFontSize(20);
+            doc.text('Plan Lendanfit - 6 Meses', 20, 30);
+            
+            doc.setFontSize(14);
+            doc.text(`Edad: ${userData.age} años`, 20, 50);
+            doc.text(`Nivel: ${levels[userData.stepsLevel]}`, 20, 65);
+            doc.text(`Salud: ${userData.healthStatus}`, 20, 80);
+            doc.text(`Objetivo: ${userData.mainObjective}`, 20, 95);
+            
+            doc.setFontSize(16);
+            doc.text('Plan de Ejercicio:', 20, 120);
+            
+            // Agregar información básica del plan
+            let yPosition = 140;
+            const level = userData.stepsLevel || 'medium';
+            
+            for (let month = 1; month <= 6; month++) {
+                const exercises = exerciseData[level][month] || exerciseData[level][1];
+                doc.setFontSize(14);
+                doc.text(`Mes ${month}:`, 20, yPosition);
+                yPosition += 15;
+                
+                exercises.forEach((exercise) => {
+                    if (yPosition > 270) {
+                        doc.addPage();
+                        yPosition = 20;
+                    }
+                    doc.setFontSize(10);
+                    doc.text(`• ${exercise.name} - ${exercise.frequency}`, 25, yPosition);
+                    yPosition += 10;
+                });
+                yPosition += 10;
+            }
+            
+            doc.save('plan-lendanfit-6-meses.pdf');
+            
+            // Mostrar feedback visual
+            const originalText = event.target.innerHTML;
+            event.target.innerHTML = '<i class="fas fa-check mr-2"></i>¡Descargado!';
+            event.target.classList.add('bg-green-500');
+            
+            setTimeout(() => {
+                event.target.innerHTML = originalText;
+                event.target.classList.remove('bg-green-500');
+                event.target.classList.add('bg-accent');
+            }, 2000);
+        }
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('nutritionModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
