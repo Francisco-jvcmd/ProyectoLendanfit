@@ -22,21 +22,21 @@ export function NutritionPlan() {
 
   return (
     <>
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-6 sm:py-12">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">Plan Nutricional</h2>
-            <p className="text-muted-foreground text-lg">Recomendaciones alimentarias personalizadas</p>
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-4xl font-bold mb-4">Plan Nutricional</h2>
+            <p className="text-muted-foreground text-sm sm:text-lg px-4">Recomendaciones alimentarias personalizadas</p>
           </div>
 
           {/* Tabs de Meses Nutrición */}
-          <div className="flex flex-wrap gap-2 mb-8 overflow-x-auto">
+          <div className="flex flex-wrap gap-2 mb-6 sm:mb-8 overflow-x-auto pb-2">
             {[1, 2, 3, 4, 5, 6].map((month) => (
               <Button
                 key={month}
                 onClick={() => setSelectedMonth(month)}
                 variant={selectedMonth === month ? "default" : "secondary"}
-                className={`font-bold py-2 px-4 ${
+                className={`font-bold py-2 px-3 sm:px-4 text-sm sm:text-base flex-shrink-0 ${
                   selectedMonth === month 
                     ? 'bg-secondary text-secondary-foreground' 
                     : 'bg-muted text-foreground hover:bg-border'
@@ -50,9 +50,9 @@ export function NutritionPlan() {
 
           {/* Contenido Nutricional */}
           <div>
-            <div className="mb-8">
-              <h3 className="text-2xl font-bold mb-6">{currentNutrition.title}</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="mb-6 sm:mb-8">
+              <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-center sm:text-left">{currentNutrition.title}</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {currentNutrition.recommendations.map((item, index) => (
                   <Card 
                     key={index} 
@@ -60,15 +60,15 @@ export function NutritionPlan() {
                     onClick={() => openModal(item)}
                     data-testid={`card-nutrition-${index}`}
                   >
-                    <CardContent className="p-6">
-                      <div className="flex items-center mb-4">
-                        <div className="bg-secondary text-secondary-foreground rounded-full w-8 h-8 flex items-center justify-center font-bold mr-3">
-                          <Utensils size={16} />
+                    <CardContent className="p-4 sm:p-6">
+                      <div className="flex items-center mb-3 sm:mb-4">
+                        <div className="bg-secondary text-secondary-foreground rounded-full w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center font-bold mr-2 sm:mr-3 flex-shrink-0">
+                          <Utensils size={14} />
                         </div>
-                        <h4 className="text-lg font-bold">{item.type}</h4>
+                        <h4 className="text-base sm:text-lg font-bold leading-tight">{item.type}</h4>
                       </div>
-                      <p className="text-primary font-semibold mb-2">{item.amount}</p>
-                      <p className="text-muted-foreground text-sm">Haz clic para ver detalles y sugerencias</p>
+                      <p className="text-primary font-semibold mb-2 text-sm sm:text-base">{item.amount}</p>
+                      <p className="text-muted-foreground text-xs sm:text-sm">Haz clic para ver detalles y sugerencias</p>
                     </CardContent>
                   </Card>
                 ))}
@@ -80,24 +80,24 @@ export function NutritionPlan() {
 
       {/* Modal de Detalles Nutricionales */}
       <Dialog open={!!selectedItem} onOpenChange={closeModal}>
-        <DialogContent className="bg-card border-border max-w-2xl max-h-96 overflow-y-auto">
+        <DialogContent className="bg-card border-border max-w-2xl max-h-[80vh] overflow-y-auto m-4 w-[calc(100vw-2rem)] sm:w-full">
           <DialogHeader>
-            <div className="flex justify-between items-center">
-              <DialogTitle className="text-2xl font-bold">
+            <div className="flex justify-between items-start gap-4">
+              <DialogTitle className="text-lg sm:text-2xl font-bold leading-tight flex-1 pr-2">
                 {selectedItem?.type} - {selectedItem?.amount}
               </DialogTitle>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={closeModal}
-                className="text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground flex-shrink-0"
                 data-testid="button-close-modal"
               >
-                <X size={20} />
+                <X size={18} />
               </Button>
             </div>
           </DialogHeader>
-          <div className="text-muted-foreground leading-relaxed">
+          <div className="text-muted-foreground leading-relaxed text-sm sm:text-base mt-4">
             <p>{selectedItem?.details}</p>
           </div>
         </DialogContent>
